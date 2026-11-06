@@ -1,5 +1,7 @@
 # Cosmo Proof Shot
 
+ <img src="https://i.ibb.co/bM4cH4KX/4-K-S1-S24.jpg" />
+
 Cosmo 認證照 — tripleS / ARTMS / idntt 照片打卡 Object 小卡模擬工具
 
 Cosmo Proof Shot 是一個純前端的網頁應用，讓使用者把 Cosmo 風格的Object 小卡疊加到自己的照片或影片上，快速做出認證照的打卡效果整個工具所有處理都在瀏覽器本機完成

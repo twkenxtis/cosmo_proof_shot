@@ -41,10 +41,4 @@ export function updateUploadButtonVisibility(ui) {
 			emptyHint.removeAttribute("aria-hidden");
 		}
 	}
-
-	// 手機頂部 appbar 若也有上傳按鈕
-	const appbarBg = document.querySelector("#mobile-appbar .appbar-bg-btn");
-	if (appbarBg) {
-		appbarBg.style.display = hide ? "none" : "";
-	}
 }

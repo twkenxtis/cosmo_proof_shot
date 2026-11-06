@@ -733,9 +733,6 @@ function applySuggestion(c) {
 		if (opt) _ui.pickerMember.value = opt.value;
 	}
 	if (_ui.pickerCode) _ui.pickerCode.value = pickerState.code;
-
-
-
 	pickerClose();
 	if (typeof _onApplySlug === "function") _onApplySlug(slug);
 }

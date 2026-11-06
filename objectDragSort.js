@@ -43,7 +43,6 @@ export function initObjectDragSort({ onReorder }) {
 		const moved = objects.splice(_dragSrcIdx, 1)[0];
 		objects.splice(dst, 0, moved);
 
-		// 修正 currentObjectIndex
 		if (currentObjectIndex === _dragSrcIdx) {
 			setCurrentObjectIndex(dst);
 		} else if (_dragSrcIdx < currentObjectIndex && dst >= currentObjectIndex) {

@@ -82,7 +82,7 @@ export function createAdvancedSettings(ui, getCurrentLang) {
                 </div>
             </div>
             <div style="height: 16px; width: 100%; flex-shrink: 0;"></div>
-            <a href="https://github.com/twkenxtis/cosmo_proof-shot_shoot/" target="_blank" rel="noopener noreferrer" class="advanced-github pure-button">
+            <a href="https://github.com/twkenxtis/cosmo_proof_shot" target="_blank" rel="noopener noreferrer" class="advanced-github pure-button">
                 <i class="ti ti-brand-github"></i>
                 <span data-i18n="advGithub">GitHub Repository</span>
             </a>

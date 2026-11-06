@@ -272,7 +272,7 @@ async function generateExportBlob() {
         finalCanvas.height = CANVAS_H;
         const ctx = finalCanvas.getContext("2d", { willReadFrequently: true });
 
-        // [智慧取樣] 只針對最上層 Object 判斷，排除透明像素
+        // 只針對最上層 Object 判斷 排除透明像素
         let bgColor = "#b3b3b3";
         try {
             const topObj = objects.find((o) => o.canvas && o.canvas.width > 0);
@@ -329,7 +329,7 @@ async function generateExportBlob() {
         }
     }
 
-    // 邊緣平滑：對整張圖做輕微模糊並半透明疊加，消除切線感
+    // 邊緣平滑 對整張圖做輕微模糊並半透明疊加，消除切線感
     const smoothCanvas = document.createElement("canvas");
     smoothCanvas.width = finalCanvas.width;
     smoothCanvas.height = finalCanvas.height;
@@ -651,6 +651,9 @@ async function exportObjectGifFull(options = {}) {
 				return;
 			}
 			const t = i * frameDuration;
+
+
+
 			if (t >= duration) break;
 			if (i % 30 === 0) {
 				showExportLog(
@@ -891,7 +894,6 @@ async function exportObjectGifFull(options = {}) {
 
 function setMp4ExportLock(on) {
 	mp4Exporting = on;
-
 	// 不論開關都清掉進行中的互動
 	state.drag.active = false;
 	state.drag.scale = false;
@@ -1587,7 +1589,18 @@ async function exportObjectVideoFull(options = {}) {
 					if (test[p] > 10 || test[p + 1] > 10 || test[p + 2] > 10) nonBlack++;
 				}
 			}
-			await videoSource.add(t, frameDuration);
+			
+			if (targetMode === "all") {
+				for (let k = objects.length - 1; k >= 0; k--) {
+					const obj = objects[k];
+					if (!obj || !obj.canvas || obj.canvas.width <= 0) continue;
+					// 呼叫 export.js 內建的 drawObjectToCtx 進行 2D 繪製
+					// 避免只算到背景而漏掉 Object
+					drawObjectToCtx(cctx, obj, k, renderScale);
+				}
+			}
+
+await videoSource.add(t, frameDuration);
 		}
 
 		showExportLog(getText(_getCurrentLang(), "exportLogFinalizing"));

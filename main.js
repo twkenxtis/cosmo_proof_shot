@@ -44,7 +44,7 @@ import {
 } from "./canvas.js";
 
 import { layoutGrid, layoutCircle, layoutFan } from "./layoutTools.js";
-import { initLayoutUI } from "./layoutUI.js";
+import { initLayoutUI, initMobileLayoutToolsUI, initDesktopLayoutToolsUI } from "./layoutUI.js";
 import { initObjectSelector, refreshObjectSelectorUI } from "./objectSelector.js";
 import { initTextInput, bindTextInputs } from "./textInput.js";
 import { setupSyncInputs } from "./uiSync.js";
@@ -195,7 +195,7 @@ function resizeCanvas() {
 	if (isM) {
 		const wrapRect = ui.wrap.getBoundingClientRect();
 
-		const targetW = wrapRect.width || rect.width * 0.75;
+		const targetW = wrapRect.width || rect.width;
 
 		scale = targetW / CANVAS_W;
 	} else {
@@ -446,7 +446,6 @@ async function handleFetchUrl(urlVal) {
 			if (data.mediaBlob) objects[idx]._savedMediaBlob = data.mediaBlob;
 		}
 		objects[idx].name = data.slug || "apollo";
-		// 成員名（小寫，來自 parseSlug）：顯示時再由 MEMBER_ORDER 轉官方大小寫
 		const _parsedForMember = parseSlug(data.slug || '');
 		objects[idx].member = (_parsedForMember && _parsedForMember.member) || '';
 		objects[idx].member2 = (_parsedForMember && _parsedForMember.member2) || '';
@@ -490,7 +489,7 @@ async function handleFetchUrl(urlVal) {
 		updateCoordDisplay();
 		updateUploadButtonVisibility(ui);
 
-		// 自動補一格空 object（若未達上限且當前是最後一格）
+		// 自動補一格空 object 若未達上限且當前是最後一格
 		try {
 			if (objects.length < MAX_OBJECTS && idx === objects.length - 1) {
 				const _res = addObject();
@@ -1080,6 +1079,10 @@ window.addEventListener("keydown", (e) => {
 });
 
 function onPointerDown(e) {
+	// 如果是滑桿或輸入框，直接放行
+	if (e.target && e.target.closest && e.target.closest('input, select, textarea')) {
+		return;
+	}
 	if (isMp4Exporting()) {
 		e.preventDefault();
 		return;
@@ -1094,7 +1097,6 @@ function onPointerDown(e) {
 	}
 
 	// 若點擊的是 Object 按鈕選單中的，不要進入畫布拖曳邏輯
-
 	state.drag.active = false;
 	state.drag.scale = false;
 	state.drag.rotate = false;
@@ -1325,6 +1327,10 @@ function clampTilt(v) {
 }
 
 function onPointerMove(e) {
+	// 如果是滑桿或輸入框，直接放行
+	if (e.target && e.target.closest && e.target.closest('input, select, textarea')) {
+		return;
+	}
 	if (
 		!state.drag.active &&
 		!state.drag.scale &&
@@ -1408,7 +1414,7 @@ function onPointerMove(e) {
 	if (state.drag.active) {
 		syncTrashPos();
 
-        // [整體連動] 若開啟，同步計算其他物件的相對位移
+        // 若開啟，同步計算其他物件的相對位移
         if (state.globalLinkMode) {
             const targetX = rawX + singleObject.overlay.x;
             const targetY = pos.y - state.drag.startY + singleObject.overlay.y;
@@ -1476,7 +1482,7 @@ function onPointerMove(e) {
 			const targetScale = baseScale * ratio;
 			singleObject.overlay.scale = Math.max(0.1, Math.min(8, targetScale));
 		}
-		// 不再更新 startX/startY（避免 dist0 漂移导致抽搐）
+		// 不再更新 startX/startY
 		scheduleDraw();
 		updateCoordDisplay();
 	} else if (state.drag.rotate) {
@@ -1508,7 +1514,7 @@ function onPointerMove(e) {
 		if (state.drag.tiltAxis === "x") {
                 // 上下紅點：rotX 原速，rotY (左右) 速度減半
                 let newRotX = state.drag.startRotX - dyScreen * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1);
-                let newRotY = state.drag.startRotY + dxScreen * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1) * 0.5;
+                let newRotY = state.drag.startRotY + dxScreen * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1) * 0.1;
                 
                 newRotX = ((((newRotX + 180) % 360) + 360) % 360) - 180;
                 newRotY = ((((newRotY + 180) % 360) + 360) % 360) - 180;
@@ -1518,7 +1524,7 @@ function onPointerMove(e) {
         } else if (state.drag.tiltAxis === "y") {
                 // 左右紅點：rotY 原速，rotX (上下) 速度減半
                 let newRotY = state.drag.startRotY + (state.drag.startIsBack ? -dxScreen : dxScreen) * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1);
-                let newRotX = state.drag.startRotX - dyScreen * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1) * 0.5;
+                let newRotX = state.drag.startRotX - dyScreen * DEG_PER_SCREEN_PX * (state.drag.tiltSpeedScale || 1) * 0.1;
                 
                 newRotY = ((((newRotY + 180) % 360) + 360) % 360) - 180;
                 newRotX = ((((newRotX + 180) % 360) + 360) % 360) - 180;
@@ -1586,7 +1592,7 @@ function onPointerUp(e) {
 		refreshObjectSelectorUI();
 		updateCoordDisplay();
 		showToast(getText(currentLang, "deletedObject"));
-		// 額外清「自動補的那格空格」（最後一格，非當前格，且為空）
+		// 額外清自動補的那格空格 最後一格, 非當前格, 且為空
 		if (objects.length > 1) {
 			let _autoIdx = objects.length - 1;
 			if (_autoIdx === currentObjectIndex && objects.length > 2) {
@@ -1710,8 +1716,6 @@ if (isMobile) {
 	}
 }
 
-
-
 resizeCanvas();
 applyTranslations(ui, currentLang);
 renderBookmarks();
@@ -1789,7 +1793,6 @@ document.addEventListener("paste", (e) => {
 		updateUploadButtonVisibility(ui);
 	});
 });
-
 
 // 圖層方向 objects[0] 為最上層
 function bringCurrentObjectToFront() {
@@ -2078,9 +2081,8 @@ if (bookmarkSelectTop) {
     });
 }
 
-
-
-
-
-// 初始化排版工具互動
-setTimeout(() => { initLayoutUI(ui); }, 100);
+setTimeout(() => {
+    initLayoutUI(ui);
+    initMobileLayoutToolsUI();
+    initDesktopLayoutToolsUI();
+}, 100);

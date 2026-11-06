@@ -8,7 +8,7 @@
     <link rel="icon" href="./favicon.png" type="image/png">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Cosmo Proof Shot">
-    <meta property="og:description" content="Cosmo 認證照；triples 照片打卡 Object小卡模擬">
+    <meta property="og:description" content="Cosmo 認證照；triples 照片打卡 Object 小卡模擬">
     <meta property="og:image" content="https://cosmo-proof-shot.ken8902026.workers.dev/images/ogmeta.png">
     <meta property="og:url" content="https://cosmo-proof-shot.ken8902026.workers.dev/" />
     <meta property="og:locale" content="zh_TW" />
@@ -16,7 +16,7 @@
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Cosmo Proof Shot">
-    <meta name="twitter:description" content="Cosmo 認證照；triples 照片打卡 Object小卡模擬">
+    <meta name="twitter:description" content="Cosmo 認證照；triples 照片打卡 Object 小卡模擬">
     <meta name="twitter:image" content="https://cosmo-proof-shot.ken8902026.workers.dev/images/ogmeta.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +43,6 @@
         };
     </script>
 </head>
-
 <body>
     <header id="mobile-appbar" class="mobile-only">
                 <div id="appbar-bookmark-wrap">
@@ -70,7 +69,6 @@
             <i class="ti ti-download"></i> <span data-i18n="export">匯出</span>
         </button>
     </header>
-
     <nav id="mobile-dock" class="mobile-only" aria-label="快速操作">
         <button id="btn-bg-mobile" class="pure-button dock-btn">
             <i class="ti ti-photo dock-icon"></i>
@@ -90,7 +88,6 @@
             <span class="dock-label" data-i18n="settings">設定</span>
         </button>
     </nav>
-
     <div id="mobile-object-switch" class="mobile-only object-selector" role="tablist" aria-label="Object 切換">
         <button id="btn-remove-object-mobile" class="pure-button obj-add-btn" type="button" title="移除 Object" aria-label="移除 Object">
             <i class="ti ti-minus"></i>
@@ -100,7 +97,6 @@
             <i class="ti ti-plus"></i>
         </button>
     </div>
-
     <div id="toolbar" class="pure-form" role="dialog" aria-modal="true" aria-label="工具列">
         <div class="drawer-handle" aria-hidden="true"></div>
 
@@ -111,7 +107,6 @@
                 <i class="ti ti-link"></i> <span data-i18n="importUrl">載入網址</span>
             </button>
         </div>
-
         <section class="drawer-card">
             <div class="drawer-card-title">
                 <i class="ti ti-photo"></i> <span data-i18n="headerImg">圖片與卡套</span>
@@ -136,7 +131,6 @@
                 </button>
             </div>
         </section>
-
         <section class="drawer-card">
             <div class="drawer-card-title">
                 <i class="ti ti-layout-grid"></i> <span data-i18n="Composition">構圖輔助</span>
@@ -157,20 +151,53 @@
                 </label>
             </div>
         </section>
-        <section class="drawer-card">
-            <div class="drawer-card-title">
-                <i class="ti ti-layout-grid"></i> <span data-i18n="layoutToolsTitle">排版工具</span>
-            </div>
-            <div class="drawer-grid drawer-grid--2">
-                <button id="btn-layout-grid-mobile" class="pure-button" data-i18n="layoutGrid">網格</button>
-                <button id="btn-layout-circle-mobile" class="pure-button" data-i18n="layoutCircle">圓形</button>
-                <button id="btn-layout-fan-mobile" class="pure-button" data-i18n="layoutFan">扇形</button>
-                <button id="btn-layout-stack-mobile" class="pure-button" data-i18n="layoutStack">Stack</button>
-                <button id="btn-layout-flip3d-mobile" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
+        <section class="drawer-card drawer-card--collapsible" id="mobile-layout-tools-card">
+            <button type="button" class="drawer-card-title drawer-card-toggle" id="btn-toggle-layout-tools-mobile"
+                aria-expanded="false" aria-controls="mobile-layout-tools-body">
+                <i class="ti ti-layout-grid"></i>
+                <span data-i18n="layoutToolsTitle">排版工具</span>
+                <i class="ti ti-chevron-down layout-toggle-chevron"></i>
+            </button>
+            <div class="drawer-collapsible-body" id="mobile-layout-tools-body" hidden>
+                <div class="drawer-grid drawer-grid--2">
+                    <button id="btn-layout-grid-mobile" class="pure-button" data-i18n="layoutGrid">網格</button>
+                    <button id="btn-layout-circle-mobile" class="pure-button" data-i18n="layoutCircle">圓形</button>
+                    <button id="btn-layout-fan-mobile" class="pure-button" data-i18n="layoutFan">扇形</button>
+                    <button id="btn-layout-stack-mobile" class="pure-button" data-i18n="layoutStack">Stack</button>
+                    <button id="btn-layout-flip3d-mobile" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
+                </div>
+                <div class="drawer-grid drawer-grid--1 layout-sliders-mobile">
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutSpacing">間距/半徑 (Spacing/Radius)</span>
+                        <input type="range" id="slider-layout-spacing-mobile" class="layout-slider-mobile" min="50" max="500" value="200">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutScale">整體縮放 (Scale)</span>
+                        <input type="range" id="slider-global-scale-mobile" class="layout-slider-mobile" min="1" max="100" value="50">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutRotY">水平 3D 翻轉 (RotY)</span>
+                        <input type="range" id="slider-3d-roty-mobile" class="layout-slider-mobile" min="1" max="100" value="50">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutRotX">垂直 3D 俯仰 (RotX)</span>
+                        <input type="range" id="slider-3d-rotx-mobile" class="layout-slider-mobile" min="1" max="100" value="50">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutX">水平平移 (X)</span>
+                        <input type="range" id="slider-global-x-mobile" class="layout-slider-mobile" min="-5000" max="5000" value="0">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutY">垂直平移 (Y)</span>
+                        <input type="range" id="slider-global-y-mobile" class="layout-slider-mobile" min="-5000" max="5000" value="0">
+                    </label>
+                    <label class="layout-slider-field">
+                        <span class="layout-slider-label" data-i18n="layoutRotation">整體旋轉 (Rotation)</span>
+                        <input type="range" id="slider-global-rotation-mobile" class="layout-slider-mobile" min="0" max="360" value="0">
+                    </label>
+                </div>
             </div>
         </section>
-
-
         <section class="drawer-card">
             <div class="drawer-grid drawer-grid--3">
                 <input type="text" id="input-text-mobile" class="pure-input-1" value="000A" maxlength="4"
@@ -192,9 +219,7 @@
                     <input type="text" id="input-qr-text-mobile" placeholder=" QR text cosmo://the-gate" maxlength="200" />
                 </div>
             </div>
-
         </section>
-
         <section class="drawer-card">
             <div class="drawer-card-title">
                 <i class="ti ti-download"></i> <span data-i18n="headerExport">匯出與設定</span>
@@ -213,7 +238,6 @@
                 </div>
             </div>
         </section>
-
         <section class="drawer-card">
             <div class="drawer-card-title">
                 <i class="ti ti-language"></i> <span data-i18n="langResetTitle">語言與重置</span>
@@ -236,7 +260,6 @@
                 </button>
             </div>
         </section>
-
         <section class="drawer-card">
             <div class="drawer-grid drawer-grid--1">
                 <button id="btn-clear-cache-mobile" class="pure-button">
@@ -244,14 +267,12 @@
                 </button>
             </div>
         </section>
-
         <div class="picker-mobile-close-row">
             <button id="toolbar-close-mobile" class="pure-button picker-close-btn" type="button">
                 <i class="ti ti-x"></i> <span data-i18n="close">Close</span>
             </button>
         </div>
     </div>
-
     <div id="drawer-backdrop" class="mobile-only" aria-hidden="true"></div>
     <div id="objekts-picker" role="dialog" aria-modal="true" data-i18n-aria-label="pickerTitle">
   <div id="picker-resize-handle" aria-hidden="true"><i class="ti ti-grip-vertical"></i></div>
@@ -259,7 +280,6 @@
         <div class="picker-title">
             <i class="ti ti-cube"></i> <span data-i18n="pickerTitle">Object 選擇</span>
         </div>
-
         <div class="picker-scroll-area">
             <div class="picker-grid picker-grid--3col">
                 <button type="button" id="picker-reset-filters-btn" class="pure-button picker-rotate-btn" title="清除篩選（Season / Era / Member）" aria-label="清除篩選">
@@ -275,7 +295,6 @@
                         <option value="idntt">idntt</option>
                     </select>
                 </label>
-
                 <label class="picker-field picker-field--username">
                     <span class="picker-label" data-i18n="pickerUserSearch">使用者名稱</span>
                     <input type="text" id="picker-user-input" class="pure-input-1" placeholder="username"
@@ -287,7 +306,6 @@
                     <div id="picker-season-chips" class="picker-chips" role="group" aria-label="季節多選"></div>
                 </label>
             </div>
-
             <div class="picker-grid picker-grid--2">
                 <label class="picker-field">
                     <span class="picker-label" data-i18n="pickerMember">成員</span>
@@ -303,13 +321,11 @@
                     <div id="picker-code-suggest" class="picker-suggest"></div>
                 </label>
             </div>
-
             <div class="picker-grid picker-grid--1">
                 <label class="picker-field picker-field--era">
                     <div id="picker-era-chips" class="picker-chips" role="group" aria-label="期數多選"></div>
                 </label>
             </div>
-
             <div id="picker-user-suggest" class="picker-suggest"></div>
 
             <div class="picker-suggest-block">
@@ -319,14 +335,12 @@
                 <div id="picker-suggest-list" class="picker-suggest-list"></div>
             </div>
         </div>
-
         <div class="picker-close-row">
             <button id="picker-close-mobile" class="pure-button picker-close-btn" type="button">
                 <i class="ti ti-x"></i> <span data-i18n="close">Close</span>
             </button>
         </div>
     </div>
-
     <div id="main-layout">
         <!-- 桌面版側邊欄 -->
         <div id="desktop-sidebar">
@@ -448,44 +462,43 @@
                     </label>
                 </div>
             </div>
-
-
-            <div class="sidebar-section sidebar-section--layout">
-                <div class="sidebar-row">
-                    
-                </div>
-                <div class="sidebar-title">
-                    <i class="ti ti-layout-grid"></i> <span data-i18n="layoutToolsTitle">排版工具</span>
-                </div>
-                <div class="sidebar-row">
-                    <button id="btn-layout-grid" class="pure-button" data-i18n="layoutGrid">網格</button>
-                </div>
-                <div class="sidebar-row">
-                    <button id="btn-layout-circle" class="pure-button" data-i18n="layoutCircle">圓形</button>
-                    <button id="btn-layout-fan" class="pure-button" data-i18n="layoutFan">扇形</button>
-                </div>
-                <div class="sidebar-row">
-                    <button id="btn-layout-stack" class="pure-button" data-i18n="layoutStack">Stack</button>
-                    <button id="btn-layout-flip3d" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
-                </div>
-                <div class="sidebar-row" style="flex-direction: column; gap: 4px; align-items: stretch;">
-                    <span style="font-size: 10px; color: var(--text-muted);" data-i18n="layoutSpacing">間距/半徑 (Spacing/Radius)</span>
-                    <input type="range" id="slider-layout-spacing" min="50" max="500" value="200" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutScale">整體縮放 (Scale)</span>
-                    <input type="range" id="slider-global-scale" min="1" max="100" value="50" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotY">水平 3D 翻轉 (RotY)</span>
-                    <input type="range" id="slider-3d-roty" min="1" max="100" value="50" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotX">垂直 3D 俯仰 (RotX)</span>
-                    <input type="range" id="slider-3d-rotx" min="1" max="100" value="50" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutX">水平平移 (X)</span>
-                    <input type="range" id="slider-global-x" min="-5000" max="5000" value="0" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutY">垂直平移 (Y)</span>
-                    <input type="range" id="slider-global-y" min="-5000" max="5000" value="0" style="width: 100%;">
-                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotation">整體旋轉 (Rotation)</span>
-                    <input type="range" id="slider-global-rotation" min="0" max="360" value="0" style="width: 100%;">
+            <div class="sidebar-section sidebar-section--layout drawer-card--collapsible" id="desktop-layout-tools-card">
+                <button type="button" class="drawer-card-title drawer-card-toggle" id="btn-toggle-layout-tools-desktop"
+                    aria-expanded="false" aria-controls="desktop-layout-tools-body">
+                    <i class="ti ti-layout-grid"></i>
+                    <span data-i18n="layoutToolsTitle">排版工具</span>
+                    <i class="ti ti-chevron-down layout-toggle-chevron"></i>
+                </button>
+                <div class="drawer-collapsible-body" id="desktop-layout-tools-body" hidden>
+                    <div class="sidebar-row">
+                        <button id="btn-layout-grid" class="pure-button" data-i18n="layoutGrid">網格</button>
+                    </div>
+                    <div class="sidebar-row">
+                        <button id="btn-layout-circle" class="pure-button" data-i18n="layoutCircle">圓形</button>
+                        <button id="btn-layout-fan" class="pure-button" data-i18n="layoutFan">扇形</button>
+                    </div>
+                    <div class="sidebar-row">
+                        <button id="btn-layout-stack" class="pure-button" data-i18n="layoutStack">Stack</button>
+                        <button id="btn-layout-flip3d" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
+                    </div>
+                    <div class="sidebar-row" style="flex-direction: column; gap: 4px; align-items: stretch;">
+                        <span style="font-size: 10px; color: var(--text-muted);" data-i18n="layoutSpacing">間距/半徑 (Spacing/Radius)</span>
+                        <input type="range" id="slider-layout-spacing" min="50" max="500" value="200" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutScale">整體縮放 (Scale)</span>
+                        <input type="range" id="slider-global-scale" min="1" max="100" value="50" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotY">水平 3D 翻轉 (RotY)</span>
+                        <input type="range" id="slider-3d-roty" min="1" max="100" value="50" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotX">垂直 3D 俯仰 (RotX)</span>
+                        <input type="range" id="slider-3d-rotx" min="1" max="100" value="50" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutX">水平平移 (X)</span>
+                        <input type="range" id="slider-global-x" min="-5000" max="5000" value="0" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutY">垂直平移 (Y)</span>
+                        <input type="range" id="slider-global-y" min="-5000" max="5000" value="0" style="width: 100%;">
+                        <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotation">整體旋轉 (Rotation)</span>
+                        <input type="range" id="slider-global-rotation" min="0" max="360" value="0" style="width: 100%;">
+                    </div>
                 </div>
             </div>
-
             <div class="sidebar-section sidebar-section--text">
                 <div class="sidebar-row">
                     <input type="text" id="input-text" class="pure-input-2" value="000A" maxlength="4">
@@ -498,15 +511,13 @@
                     </select>
                     <input type="color" id="input-color" value="#ffffff">
                 </div>
-            
             <div class="sidebar-row">
                 <div class="qr-input-wrap">
                     <i class="ti ti-qrcode qr-input-icon"></i>
                     <input type="text" id="input-qr-text" placeholder=" 　  QR text (default: cosmo://the-gate)" maxlength="200" />
                 </div>
             </div>
-</div>
-
+        </div>
             <div class="sidebar-section sidebar-section--export">
                 <div class="sidebar-title sidebar-title--export">
                     <i class="ti ti-download"></i> <span data-i18n="headerExport">匯出與設定</span>
@@ -552,7 +563,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="sidebar-section sidebar-section--coords" id="coord-monitor-section">
                 <div class="sidebar-title">
                     <i class="ti ti-focus-2"></i> <span data-i18n="headerCoords">Object 座標</span>
@@ -594,7 +604,6 @@
                 </div>
             </div>
         </div>
-
         <button id="btn-sidebar-toggle" title="收折選單">
             <i class="ti ti-chevron-left"></i>
         </button>
@@ -610,7 +619,6 @@
             </div>
         </div>
     </div>
-
     <input type="file" id="input-bg"
         accept="image/*,video/mp4,video/quicktime,video/x-matroska,video/mp2t,video/webm,video/x-m4v,.mkv,.ts,.mov,.m4v"
         style="display: none !important;">
@@ -622,5 +630,4 @@
     </div>
     <script type="module" src="main.js"></script>
 </body>
-
 </html>

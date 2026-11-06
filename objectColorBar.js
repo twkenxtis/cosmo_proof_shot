@@ -23,7 +23,6 @@ function normalize(name) {
 	return String(name || "").toLowerCase();
 }
 
-
 // 將 slug 最後一碼的字母轉大寫
 export function formatSlug(slug) {
 	if (!slug) return "";

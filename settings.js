@@ -20,7 +20,7 @@ export function bindQrTextInputs() {
 		if (val && val.trim()) {
 			state.qrText = val;
 		} else {
-			state.qrText = "cosmo://cosmo_the_gate_application";
+			state.qrText = "";
 		}
 		if (ui.inputQrText) ui.inputQrText.value = state.qrText;
 		if (ui.inputQrTextMobile) ui.inputQrTextMobile.value = state.qrText;

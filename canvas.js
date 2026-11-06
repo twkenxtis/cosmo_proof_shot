@@ -12,22 +12,51 @@ const VERTICAL_OFFSET = 0.18;
 const SAMPLE_RATIO_X = 0.9529;
 const SAMPLE_RATIO_Y = 0.851;
 
-const HANDLE_RADIUS = isMobile ? 18 : 11;
-const HANDLE_HIT_RADIUS = isMobile ? 30 : 14;
-const ROTATE_LINE_OFFSET = isMobile ? 130 : 55;
-
-const TILT_OFFSET = isMobile ? 38 : 14;
-const TILT_OFFSET_X = isMobile ? 30 : 12;
+// 基準尺寸以 DESIGN_W = 1083 為基準
+const BASE_HANDLE_RADIUS = isMobile ? 18 : 11;
+const BASE_HANDLE_HIT_RADIUS = isMobile ? 30 : 14;
+const BASE_ROTATE_LINE_OFFSET = isMobile ? 130 : 55;
+const BASE_TILT_OFFSET = isMobile ? 38 : 14;
+const BASE_TILT_OFFSET_X = isMobile ? 30 : 12;
+const BASE_TILT_HIT_RADIUS = isMobile ? 24 : 22;
+const BASE_SNAP_THRESHOLD = 12;
 
 const FOV_FACTOR = 7;
-const SNAP_THRESHOLD = 12;
+
+// 動態取得縮放比例（相對於設計基準寬度）
+function getScaleFactor() {
+    return CANVAS_W / DESIGN_W;
+}
+
+// 使用 getter 來動態取得正確的縮放後大小
+function getHandleRadius() { return BASE_HANDLE_RADIUS * getScaleFactor(); }
+function getHandleHitRadius() { return BASE_HANDLE_HIT_RADIUS * getScaleFactor(); }
+function getRotateLineOffset() { return BASE_ROTATE_LINE_OFFSET * getScaleFactor(); }
+function getTiltOffset() { return BASE_TILT_OFFSET * getScaleFactor(); }
+function getTiltOffsetX() { return BASE_TILT_OFFSET_X * getScaleFactor(); }
+function getTiltHitRadius() { return BASE_TILT_HIT_RADIUS * getScaleFactor(); }
+function getSnapThreshold() { return BASE_SNAP_THRESHOLD * getScaleFactor(); }
 
 const DEFAULT_ROTATION = ANGLE_FACTOR * COVER_RATIO;
 
-export const TRASH_RADIUS = isMobile ? 47 : 37;
-export const TRASH_HIT_RADIUS = TRASH_RADIUS * 2.6;
-export const TRASH_DELETE_RADIUS = TRASH_RADIUS * 1.3;
+// 垃圾桶基準大小以 DESIGN_W 為基準
+const BASE_TRASH_RADIUS = isMobile ? 38 : 30;
+const BASE_TRASH_HIT_RADIUS = BASE_TRASH_RADIUS * 2.6;
+const BASE_TRASH_DELETE_RADIUS = BASE_TRASH_RADIUS * 1.3;
 const TRASH_VISUAL_MAX_SCALE = 1.4;
+
+// 動態匯出的垃圾桶常數數值會隨著背景解析度改變
+export let TRASH_RADIUS = BASE_TRASH_RADIUS;
+export let TRASH_HIT_RADIUS = BASE_TRASH_HIT_RADIUS;
+export let TRASH_DELETE_RADIUS = BASE_TRASH_DELETE_RADIUS;
+
+// 更新垃圾桶大小的函數
+function updateTrashSizes() {
+    const scaleFactor = CANVAS_W / DESIGN_W;
+    TRASH_RADIUS = BASE_TRASH_RADIUS * scaleFactor;
+    TRASH_HIT_RADIUS = BASE_TRASH_HIT_RADIUS * scaleFactor;
+    TRASH_DELETE_RADIUS = BASE_TRASH_DELETE_RADIUS * scaleFactor;
+}
 
 const INITIAL_POS = {
 	0: {
@@ -42,8 +71,7 @@ const INITIAL_POS = {
 	},
 };
 
-// 3D 紅點 hit 半徑
-const TILT_HIT_RADIUS = isMobile ? 24 : 22;
+
 
 export let CANVAS_W = DESIGN_W;
 export let CANVAS_H = DESIGN_H;
@@ -52,6 +80,8 @@ export const TRASH_POS = {
 	x: 0,
 	y: 0,
 };
+updateTrashSizes();
+
 export function syncTrashPos() {
 	TRASH_POS.x = CANVAS_W / 2;
 	TRASH_POS.y = isMobile ? 57 : 60;
@@ -189,7 +219,7 @@ export const state = {
 	cropRatio: "none",
 	bgImageCropped: null,
 	useText: true,
-	qrText: "cosmo://cosmo_the_gate_application",
+	qrText: "",
 	bgName: "",
 	isDraggingToTrash: false,
 	trashHoverProgress: 0,
@@ -469,6 +499,7 @@ export function applyCanvasSize() {
 
 	if (ui.resizeCanvas) ui.resizeCanvas();
 	if (typeof invalidateCanvasRect === 'function') invalidateCanvasRect();
+	updateTrashSizes();
 	scheduleDraw();
 }
 
@@ -640,7 +671,7 @@ export function composeBackOverlay(
 			bctx,
 			targetW,
 			targetH,
-			state.qrText || obj.name || "cosmo://cosmo_the_gate_application",
+			state.qrText || obj.name || "",
 			!!(obj.useSleeve && state.sleeveImage), true,
 		);
 	}
@@ -692,15 +723,22 @@ export function drawQRCodeOnCanvas(
 	useSleeve = true,
 	mirror = false,
 ) {
-	const box_xmin = 277;
-	let box_ymin = 945;
-	const box_xmax = 578;
-	let box_ymax = 1234;
-
-	if (!useSleeve) {
-		const yShift = Math.round(DESIGN_H * 0.2);
-		box_ymin += yShift;
-		box_ymax += yShift;
+	// 根據是否使用卡套，給予不同的 QR Code 基準框位置
+	let box_xmin, box_ymin, box_xmax, box_ymax;
+	
+	if (useSleeve) {
+		// 有卡套時的基準位置（原本的設定）
+		box_xmin = 277;
+		box_ymin = 945;
+		box_xmax = 578;
+		box_ymax = 1234;
+	} else {
+		// 無卡套時的基準位置（對應圖片中左下角的白色區域）
+		// 微調：左邊延伸 10
+		box_xmin = 268;
+		box_ymin = 1028; 
+		box_xmax = 578;
+		box_ymax = 1328;
 	}
 
 	const rel_xmin = box_xmin / DESIGN_W;
@@ -726,7 +764,10 @@ export function drawQRCodeOnCanvas(
 	ctx.fillStyle = "#ffffff";
 	ctx.fillRect(offset_x, offset_y, qr_size, qr_size);
 
-	const data = qrData || "cosmo://cosmo_the_gate_application";
+	const data = qrData || "";
+
+	// 如果沒有 QR 文字，就不繪製 QR Code
+	if (!data) return;
 
 	loadQRLib().then((qrcode) => {
 		if (!qrcode) {
@@ -954,7 +995,7 @@ export function computeVideoCrop(video, cropRatio) {
 	};
 }
 
-// ===== 3D 透視旋轉 =====
+// 3D 透視旋轉
 function rotate3D(x, y, z, rx, ry, rz) {
 	const cx = Math.cos(rx),
 		sx = Math.sin(rx);
@@ -1124,7 +1165,7 @@ function drawSelectionUI(selIdx) {
 			for (let k = 1; k < 4; k++) uiCtx.lineTo(proj[k].x, proj[k].y);
 			uiCtx.closePath();
 			uiCtx.strokeStyle = "rgba(255,255,255,0.8)";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.stroke();
 
 			const midTop = {
@@ -1151,20 +1192,20 @@ function drawSelectionUI(selIdx) {
 				[midRight, "tiltRight"],
 			].forEach(([p]) => {
 				uiCtx.beginPath();
-				uiCtx.arc(p.x, p.y, HANDLE_RADIUS, 0, Math.PI * 2);
+				uiCtx.arc(p.x, p.y, getHandleRadius(), 0, Math.PI * 2);
 				uiCtx.fillStyle = "#ff66cc";
 				uiCtx.strokeStyle = "#fff";
-				uiCtx.lineWidth = 3;
+				uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 				uiCtx.fill();
 				uiCtx.stroke();
 			});
 
 			proj.forEach((p) => {
 				uiCtx.beginPath();
-				uiCtx.arc(p.x, p.y, HANDLE_RADIUS, 0, Math.PI * 2);
+				uiCtx.arc(p.x, p.y, getHandleRadius(), 0, Math.PI * 2);
 				uiCtx.fillStyle = "#2ecc71";
 				uiCtx.strokeStyle = "#fff";
-				uiCtx.lineWidth = 3;
+				uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 				uiCtx.fill();
 				uiCtx.stroke();
 			});
@@ -1175,22 +1216,22 @@ function drawSelectionUI(selIdx) {
 			const nx = topDy / topLen;
 			const ny = -topDx / topLen;
 			const rotatePos = {
-				x: midTop.x + nx * ROTATE_LINE_OFFSET,
-				y: midTop.y + ny * ROTATE_LINE_OFFSET,
+				x: midTop.x + nx * getRotateLineOffset(),
+				y: midTop.y + ny * getRotateLineOffset(),
 			};
 
 			uiCtx.beginPath();
 			uiCtx.moveTo(midTop.x, midTop.y);
 			uiCtx.lineTo(rotatePos.x, rotatePos.y);
 			uiCtx.strokeStyle = "#f39c12";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.stroke();
 
 			uiCtx.beginPath();
-			uiCtx.arc(rotatePos.x, rotatePos.y, HANDLE_RADIUS, 0, Math.PI * 2);
+			uiCtx.arc(rotatePos.x, rotatePos.y, getHandleRadius(), 0, Math.PI * 2);
 			uiCtx.fillStyle = "#f1c40f";
 			uiCtx.strokeStyle = "#fff";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.fill();
 			uiCtx.stroke();
 
@@ -1200,28 +1241,28 @@ function drawSelectionUI(selIdx) {
 			const bnx = -botDy / botLen;
 			const bny = botDx / botLen;
 			const rotatePosBottom = {
-				x: midBottom.x + bnx * ROTATE_LINE_OFFSET,
-				y: midBottom.y + bny * ROTATE_LINE_OFFSET,
+				x: midBottom.x + bnx * getRotateLineOffset(),
+				y: midBottom.y + bny * getRotateLineOffset(),
 			};
 
 			uiCtx.beginPath();
 			uiCtx.moveTo(midBottom.x, midBottom.y);
 			uiCtx.lineTo(rotatePosBottom.x, rotatePosBottom.y);
 			uiCtx.strokeStyle = "#f39c12";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.stroke();
 
 			uiCtx.beginPath();
 			uiCtx.arc(
 				rotatePosBottom.x,
 				rotatePosBottom.y,
-				HANDLE_RADIUS,
+				getHandleRadius(),
 				0,
 				Math.PI * 2,
 			);
 			uiCtx.fillStyle = "#f1c40f";
 			uiCtx.strokeStyle = "#fff";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.fill();
 			uiCtx.stroke();
 		} else {
@@ -1230,7 +1271,7 @@ function drawSelectionUI(selIdx) {
 			uiCtx.rotate((rotation * Math.PI) / 180);
 
 			uiCtx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.strokeRect(-w / 2, -h / 2, w, h);
 
 			const handles = getHandles(w, h);
@@ -1241,12 +1282,12 @@ function drawSelectionUI(selIdx) {
 			uiCtx.moveTo(0, h / 2);
 			uiCtx.lineTo(handles.rotateBottom.x, handles.rotateBottom.y);
 			uiCtx.strokeStyle = "#f39c12";
-			uiCtx.lineWidth = 3;
+			uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 			uiCtx.stroke();
 
 			for (const [key, pos] of Object.entries(handles)) {
 				uiCtx.beginPath();
-				uiCtx.arc(pos.x, pos.y, HANDLE_RADIUS, 0, Math.PI * 2);
+				uiCtx.arc(pos.x, pos.y, getHandleRadius(), 0, Math.PI * 2);
 				if (key.startsWith("tilt")) {
 					uiCtx.fillStyle = "#ff66cc";
 				} else if (key === "rotate" || key === "rotateBottom") {
@@ -1255,7 +1296,7 @@ function drawSelectionUI(selIdx) {
 					uiCtx.fillStyle = "#2ecc71";
 				}
 				uiCtx.strokeStyle = "#ffffff";
-				uiCtx.lineWidth = 3;
+				uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 				uiCtx.fill();
 				uiCtx.stroke();
 			}
@@ -1405,7 +1446,7 @@ function drawTrashUI() {
 	if (canDelete) {
 		uiCtx.fillStyle = "rgba(231, 76, 60, 0.92)";
 		uiCtx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-		uiCtx.lineWidth = 3;
+		uiCtx.lineWidth = Math.max(2, 3 * getScaleFactor());
 	} else if (progress > 0) {
 		uiCtx.fillStyle = `rgba(231, 76, 60, ${0.35 + progress * 0.45})`;
 		uiCtx.strokeStyle = `rgba(255, 255, 255, ${0.5 + progress * 0.5})`;
@@ -1487,26 +1528,26 @@ export function getHandles(w, h) {
 		},
 		rotate: {
 			x: 0,
-			y: -h / 2 - ROTATE_LINE_OFFSET,
+			y: -h / 2 - getRotateLineOffset(),
 		},
 		rotateBottom: {
 			x: 0,
-			y: h / 2 + ROTATE_LINE_OFFSET,
+			y: h / 2 + getRotateLineOffset(),
 		},
 		tiltTop: {
 			x: 0,
-			y: -h / 2 - TILT_OFFSET,
+			y: -h / 2 - getTiltOffset(),
 		},
 		tiltBottom: {
 			x: 0,
-			y: h / 2 + TILT_OFFSET,
+			y: h / 2 + getTiltOffset(),
 		},
 		tiltLeft: {
-			x: -w / 2 - TILT_OFFSET_X,
+			x: -w / 2 - getTiltOffsetX(),
 			y: 0,
 		},
 		tiltRight: {
-			x: w / 2 + TILT_OFFSET_X,
+			x: w / 2 + getTiltOffsetX(),
 			y: 0,
 		},
 	};
@@ -1614,7 +1655,7 @@ export function hitTestHandle(mx, my) {
         let bestTiltDist = Infinity;
         for (const [p, key] of tiltTargets) {
             const d = Math.hypot(mx - p.x, my - p.y);
-            if (d < TILT_HIT_RADIUS && d < bestTiltDist) {
+            if (d < getTiltHitRadius() && d < bestTiltDist) {
                 bestTilt = key;
                 bestTiltDist = d;
             }
@@ -1625,7 +1666,7 @@ export function hitTestHandle(mx, my) {
         let bestCornerDist = Infinity;
         for (let i = 0; i < 4; i++) {
             const d = Math.hypot(mx - proj[i].x, my - proj[i].y);
-            if (d < HANDLE_HIT_RADIUS && d < bestCornerDist) {
+            if (d < getHandleHitRadius() && d < bestCornerDist) {
                 bestCorner = cornerKeys[i];
                 bestCornerDist = d;
             }
@@ -1641,22 +1682,22 @@ export function hitTestHandle(mx, my) {
 		const topDy = proj[1].y - proj[0].y;
 		const topLen = Math.hypot(topDx, topDy) || 1;
 		const rotatePos = {
-			x: midTop.x + (topDy / topLen) * ROTATE_LINE_OFFSET,
-			y: midTop.y + (-topDx / topLen) * ROTATE_LINE_OFFSET,
+			x: midTop.x + (topDy / topLen) * getRotateLineOffset(),
+			y: midTop.y + (-topDx / topLen) * getRotateLineOffset(),
 		};
-		if (Math.hypot(mx - rotatePos.x, my - rotatePos.y) < HANDLE_HIT_RADIUS)
+		if (Math.hypot(mx - rotatePos.x, my - rotatePos.y) < getHandleHitRadius())
 			return "rotate";
 
 		const botDx = proj[2].x - proj[3].x;
 		const botDy = proj[2].y - proj[3].y;
 		const botLen = Math.hypot(botDx, botDy) || 1;
 		const rotatePosBottom = {
-			x: midBottom.x + (-botDy / botLen) * ROTATE_LINE_OFFSET,
-			y: midBottom.y + (botDx / botLen) * ROTATE_LINE_OFFSET,
+			x: midBottom.x + (-botDy / botLen) * getRotateLineOffset(),
+			y: midBottom.y + (botDx / botLen) * getRotateLineOffset(),
 		};
 		if (
 			Math.hypot(mx - rotatePosBottom.x, my - rotatePosBottom.y) <
-			HANDLE_HIT_RADIUS
+			getHandleHitRadius()
 		)
 			return "rotateBottom";
 
@@ -1672,12 +1713,12 @@ export function hitTestHandle(mx, my) {
 
 	for (const key of ["tiltTop", "tiltBottom", "tiltLeft", "tiltRight"]) {
 		const pos = handles[key];
-		if (Math.hypot(lx - pos.x, ly - pos.y) < TILT_HIT_RADIUS) return key;
+		if (Math.hypot(lx - pos.x, ly - pos.y) < getTiltHitRadius()) return key;
 	}
 
 	for (const [key, pos] of Object.entries(handles)) {
 		if (key.startsWith("tilt")) continue;
-		if (Math.hypot(lx - pos.x, ly - pos.y) < HANDLE_HIT_RADIUS) return key;
+		if (Math.hypot(lx - pos.x, ly - pos.y) < getHandleHitRadius()) return key;
 	}
 
 	return null;
@@ -1754,7 +1795,7 @@ export function computeSnap(pos, draggedIdx) {
 	for (const d of draggedXs) {
 		for (const t of xTargets) {
 			const diff = Math.abs(d - t.val);
-			if (diff < SNAP_THRESHOLD && (!bestX || diff < bestX.diff)) {
+			if (diff < getSnapThreshold() && (!bestX || diff < bestX.diff)) {
 				bestX = {
 					diff,
 					delta: t.val - d,
@@ -1775,7 +1816,7 @@ export function computeSnap(pos, draggedIdx) {
 	for (const d of draggedYs) {
 		for (const t of yTargets) {
 			const diff = Math.abs(d - t.val);
-			if (diff < SNAP_THRESHOLD && (!bestY || diff < bestY.diff)) {
+			if (diff < getSnapThreshold() && (!bestY || diff < bestY.diff)) {
 				bestY = {
 					diff,
 					delta: t.val - d,

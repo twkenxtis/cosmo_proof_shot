@@ -44,7 +44,7 @@ export function bindPasteGesture() {
 	const target = _ui.uiCanvas;
 
 	const start = (e) => {
-		// 僅在「沒有背景」時允許長按貼上
+		// 僅在沒有背景時允許長按貼上
 		if (!(!state.bgImage && !state.bgVideo)) return;
 
 		if (_pastePressTimer) clearTimeout(_pastePressTimer);

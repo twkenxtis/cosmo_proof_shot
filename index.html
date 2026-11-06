@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cosmo Proof Shot</title>
+    <link rel="icon" href="./favicon.png" type="image/png">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Cosmo Proof Shot">
+    <meta property="og:description" content="Cosmo 認證照；triples 照片打卡 Object小卡模擬">
+    <meta property="og:image" content="https://cosmo-proof-shot.ken8902026.workers.dev/images/ogmeta.png">
+    <meta property="og:url" content="https://cosmo-proof-shot.ken8902026.workers.dev/" />
+    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Cosmo Proof Shot">
+    <meta name="twitter:description" content="Cosmo 認證照；triples 照片打卡 Object小卡模擬">
+    <meta name="twitter:image" content="https://cosmo-proof-shot.ken8902026.workers.dev/images/ogmeta.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://little-cake-f3d5.ken8902026.workers.dev" crossorigin>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.1.0/build/pure-min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <script type="module">
+        window.__loadMediabunny = async () => {
+            if (window.Mediabunny) return window.Mediabunny;
+            const MB = await import('https://cdn.jsdelivr.net/npm/mediabunny@1.60.0/+esm');
+            window.Mediabunny = MB;
+            window.dispatchEvent(new Event('mediabunny-ready'));
+            return MB;
+        };
+    </script>
+</head>
+
+<body>
+    <header id="mobile-appbar" class="mobile-only">
+                <div id="appbar-bookmark-wrap">
+            <select id="bookmark-select-top" class="pure-input-1" style="width: 100px; font-size: 12px; padding: 4px;"></select>
+        </div>
+        </div>
+        <button id="btn-bring-front-mobile" class="pure-button appbar-btn" type="button"
+            title="移到最上層" aria-label="移到最上層">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-align-top">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M4 4l16 0" />
+            <path d="M9 10a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2l0 -8" />
+        </svg>
+        </button>
+        <button id="btn-crop-ratio-mobile" class="pure-button appbar-btn" type="button" title="裁切比例">
+            <i class="ti ti-crop"></i>
+        </button>
+        <button id="btn-theme-toggle-mobile" class="pure-button appbar-btn" type="button" aria-label="切換主題"
+            title="切換主題">
+            <i class="ti ti-sun icon-sun"></i>
+            <i class="ti ti-moon icon-moon" style="display:none;"></i>
+        </button>
+        <button id="export-btn-bar" class="pure-button appbar-btn appbar-btn--primary">
+            <i class="ti ti-download"></i> <span data-i18n="export">匯出</span>
+        </button>
+    </header>
+
+    <nav id="mobile-dock" class="mobile-only" aria-label="快速操作">
+        <button id="btn-bg-mobile" class="pure-button dock-btn">
+            <i class="ti ti-photo dock-icon"></i>
+            <span class="dock-label" data-i18n="selectBg">選擇背景</span>
+        </button>
+        <button id="btn-object-mobile" class="pure-button dock-btn" aria-controls="objekts-picker"
+            aria-expanded="false">
+            <i class="ti ti-cube dock-icon"></i>
+            <span class="dock-label" data-i18n="objLabel">Object</span>
+        </button>
+        <button id="btn-reset-object-mobile-bar" class="pure-button dock-btn" disabled>
+            <i class="ti ti-refresh dock-icon"></i>
+            <span class="dock-label" data-i18n="resetPos">重置位置</span>
+        </button>
+        <button id="btn-open-toolbar" class="pure-button dock-btn" aria-controls="toolbar" aria-expanded="false">
+            <i class="ti ti-settings dock-icon"></i>
+            <span class="dock-label" data-i18n="settings">設定</span>
+        </button>
+    </nav>
+
+    <div id="mobile-object-switch" class="mobile-only object-selector" role="tablist" aria-label="Object 切換">
+        <button id="btn-remove-object-mobile" class="pure-button obj-add-btn" type="button" title="移除 Object" aria-label="移除 Object">
+            <i class="ti ti-minus"></i>
+        </button>
+        <div id="mobile-object-list" class="obj-scroll-list"></div>
+        <button id="btn-add-object-mobile" class="pure-button obj-add-btn" type="button" title="新增 Object" aria-label="新增 Object">
+            <i class="ti ti-plus"></i>
+        </button>
+    </div>
+
+    <div id="toolbar" class="pure-form" role="dialog" aria-modal="true" aria-label="工具列">
+        <div class="drawer-handle" aria-hidden="true"></div>
+
+        <div id="url-loader-mobile" class="pure-form drawer-row drawer-row--url">
+            <input type="text" id="input-url-mobile" class="pure-input-1"
+                placeholder="https://apollo.cafe/?id=Ever01-?-000Z">
+            <button id="btn-fetch-url-mobile" class="pure-button">
+                <i class="ti ti-link"></i> <span data-i18n="importUrl">載入網址</span>
+            </button>
+        </div>
+
+        <section class="drawer-card">
+            <div class="drawer-card-title">
+                <i class="ti ti-photo"></i> <span data-i18n="headerImg">圖片與卡套</span>
+            </div>
+            <div class="drawer-grid drawer-grid--3">
+                <label class="checkbox pure-checkbox drawer-checkbox">
+                    <input type="checkbox" id="chk-sleeve-mobile" checked>
+                    <span data-i18n="useSleeve">套用卡套</span>
+                </label>
+                <label class="checkbox pure-checkbox drawer-checkbox">
+                    <input type="checkbox" id="chk-usetext-mobile" checked>
+                    <span data-i18n="useText">套用文字</span>
+                </label>
+                <label class="checkbox pure-checkbox drawer-checkbox">
+                    <input type="checkbox" id="chk-play-video-mobile" checked>
+                    <span data-i18n="playVideo">播放影片</span>
+                </label>
+            </div>
+            <div class="drawer-grid drawer-grid--1">
+                <button id="btn-clear-bg-mobile" class="pure-button" disabled>
+                    <i class="ti ti-trash"></i> <span data-i18n="clearBg">清除背景</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="drawer-card">
+            <div class="drawer-card-title">
+                <i class="ti ti-layout-grid"></i> <span data-i18n="Composition">構圖輔助</span>
+            </div>
+            <div class="drawer-grid drawer-grid--2">
+                <div class="select-with-icon">
+                    <i class="ti ti-layout-grid"></i>
+                    <select id="select-grid-mobile" class="pure-input-1" title="網格輔助">
+                        <option value="none" selected data-i18n="gridNone">無網格</option>
+                        <option value="thirds" data-i18n="gridThirds">九宮格（三分法）</option>
+                        <option value="phi" data-i18n="gridPhi">黃金比例（φ）</option>
+                        <option value="center" data-i18n="gridCenter">中心十字</option>
+                    </select>
+                </div>
+                <label class="checkbox pure-checkbox drawer-checkbox align-checkbox">
+                    <input type="checkbox" id="chk-align-mobile" checked>
+                    <span data-i18n="alignToggle">對齊</span>
+                </label>
+            </div>
+        </section>
+        <section class="drawer-card">
+            <div class="drawer-card-title">
+                <i class="ti ti-layout-grid"></i> <span data-i18n="layoutToolsTitle">排版工具</span>
+            </div>
+            <div class="drawer-grid drawer-grid--2">
+                <button id="btn-layout-grid-mobile" class="pure-button" data-i18n="layoutGrid">網格</button>
+                <button id="btn-layout-circle-mobile" class="pure-button" data-i18n="layoutCircle">圓形</button>
+                <button id="btn-layout-fan-mobile" class="pure-button" data-i18n="layoutFan">扇形</button>
+                <button id="btn-layout-stack-mobile" class="pure-button" data-i18n="layoutStack">Stack</button>
+                <button id="btn-layout-flip3d-mobile" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
+            </div>
+        </section>
+
+
+        <section class="drawer-card">
+            <div class="drawer-grid drawer-grid--3">
+                <input type="text" id="input-text-mobile" class="pure-input-1" value="000A" maxlength="4"
+                    placeholder="文字1">
+                <input type="text" id="input-text2-mobile" class="pure-input-1" value="000000" maxlength="6"
+                    placeholder="000000" inputmode="numeric">
+                <input type="color" id="input-color-mobile" value="#ffffff" title="文字顏色">
+            </div>
+            <div class="drawer-grid drawer-grid--1">
+                <select id="select-font-mobile" class="pure-input-1">
+                    <option value="Inter" selected>Inter</option>
+                    <option value="Montserrat">Montserrat</option>
+                    <option value="Pretendard">Pretendard</option>
+                </select>
+            </div>
+            <div class="drawer-grid drawer-grid--1">
+                <div class="qr-input-wrap">
+                    <i class="ti ti-qrcode qr-input-icon"></i>
+                    <input type="text" id="input-qr-text-mobile" placeholder=" QR text cosmo://the-gate" maxlength="200" />
+                </div>
+            </div>
+
+        </section>
+
+        <section class="drawer-card">
+            <div class="drawer-card-title">
+                <i class="ti ti-download"></i> <span data-i18n="headerExport">匯出與設定</span>
+            </div>
+            <div class="drawer-grid drawer-grid--2">
+                <div class="select-with-icon">
+                    <i class="ti ti-target"></i>
+                    <select id="select-target-mobile" class="pure-input-1">
+                        <option value="all" selected data-i18n="targetAll">匯出全部</option>
+                        <option value="object" data-i18n="targetObj">只有Object</option>
+                    </select>
+                </div>
+                <div class="select-with-icon">
+                    <i class="ti ti-file"></i>
+                    <select id="select-format-mobile" class="pure-input-1"></select>
+                </div>
+            </div>
+        </section>
+
+        <section class="drawer-card">
+            <div class="drawer-card-title">
+                <i class="ti ti-language"></i> <span data-i18n="langResetTitle">語言與重置</span>
+            </div>
+            <div class="drawer-grid drawer-grid--2">
+                <div class="select-with-icon">
+                    <i class="ti ti-world"></i>
+                    <select id="select-lang-mobile" class="pure-input-1">
+                        <option value="zh-TW" selected>繁體中文</option>
+                        <option value="zh-CN">简体中文</option>
+                        <option value="en">English</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="th">ไทย</option>
+                        <option value="vi">Tiếng Việt</option>
+                    </select>
+                </div>
+                <button id="reset-all-btn-mobile" class="pure-button pure-button--danger">
+                    <i class="ti ti-rotate-clockwise"></i> <span data-i18n="resetAll">全部重置</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="drawer-card">
+            <div class="drawer-grid drawer-grid--1">
+                <button id="btn-clear-cache-mobile" class="pure-button">
+                    <i class="ti ti-database-off"></i> <span data-i18n="clearCacheBtn">清除本地資料（書籤、快取）</span>
+                </button>
+            </div>
+        </section>
+
+        <div class="picker-mobile-close-row">
+            <button id="toolbar-close-mobile" class="pure-button picker-close-btn" type="button">
+                <i class="ti ti-x"></i> <span data-i18n="close">Close</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="drawer-backdrop" class="mobile-only" aria-hidden="true"></div>
+    <div id="objekts-picker" role="dialog" aria-modal="true" data-i18n-aria-label="pickerTitle">
+  <div id="picker-resize-handle" aria-hidden="true"><i class="ti ti-grip-vertical"></i></div>
+        <div class="picker-handle" aria-hidden="true"></div>
+        <div class="picker-title">
+            <i class="ti ti-cube"></i> <span data-i18n="pickerTitle">Object 選擇</span>
+        </div>
+
+        <div class="picker-scroll-area">
+            <div class="picker-grid picker-grid--3col">
+                <button type="button" id="picker-reset-filters-btn" class="pure-button picker-rotate-btn" title="清除篩選（Season / Era / Member）" aria-label="清除篩選">
+                    <i class="ti ti-rotate-360"></i>
+                </button>
+
+                <label class="picker-field picker-field--collection">
+                    <span class="picker-label" data-i18n="pickerCollection">系列</span>
+                    <select id="picker-collection" class="pure-input-1">
+                        <option value="" data-i18n="pickerPlaceholder">--</option>
+                        <option value="tripleS" selected>tripleS</option>
+                        <option value="ARTMS">ARTMS</option>
+                        <option value="idntt">idntt</option>
+                    </select>
+                </label>
+
+                <label class="picker-field picker-field--username">
+                    <span class="picker-label" data-i18n="pickerUserSearch">使用者名稱</span>
+                    <input type="text" id="picker-user-input" class="pure-input-1" placeholder="username"
+                        maxlength="120" autocomplete="off" spellcheck="false">
+                </label>
+            </div>
+            <div class="picker-grid picker-grid--1">
+                <label class="picker-field picker-field--season">
+                    <div id="picker-season-chips" class="picker-chips" role="group" aria-label="季節多選"></div>
+                </label>
+            </div>
+
+            <div class="picker-grid picker-grid--2">
+                <label class="picker-field">
+                    <span class="picker-label" data-i18n="pickerMember">成員</span>
+                    <select id="picker-member" class="pure-input-1">
+                        <option value="" data-i18n="pickerPlaceholder">--</option>
+                    </select>
+                </label>
+
+                <label class="picker-field picker-code-wrap">
+                    <span class="picker-label" data-i18n="pickerCode">編號</span>
+                    <input type="text" id="picker-code" class="pure-input-1" value="" placeholder="000A"
+                        inputmode="text" autocomplete="off" spellcheck="false">
+                    <div id="picker-code-suggest" class="picker-suggest"></div>
+                </label>
+            </div>
+
+            <div class="picker-grid picker-grid--1">
+                <label class="picker-field picker-field--era">
+                    <div id="picker-era-chips" class="picker-chips" role="group" aria-label="期數多選"></div>
+                </label>
+            </div>
+
+            <div id="picker-user-suggest" class="picker-suggest"></div>
+
+            <div class="picker-suggest-block">
+                <div class="picker-suggest-title">
+                    <i class="ti ti-sparkles"></i> <span data-i18n="pickerSuggest">推薦</span>
+                </div>
+                <div id="picker-suggest-list" class="picker-suggest-list"></div>
+            </div>
+        </div>
+
+        <div class="picker-close-row">
+            <button id="picker-close-mobile" class="pure-button picker-close-btn" type="button">
+                <i class="ti ti-x"></i> <span data-i18n="close">Close</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="main-layout">
+        <!-- 桌面版側邊欄 -->
+        <div id="desktop-sidebar">
+            <div class="sidebar-section sidebar-section--zoom">
+                <div class="sidebar-row sidebar-row--zoom-theme">
+                    <button id="btn-theme-toggle-desktop" class="pure-button theme-toggle-btn" type="button"
+                        aria-label="切換主題" title="切換主題">
+                        <i class="ti ti-sun icon-sun"></i>
+                        <i class="ti ti-moon icon-moon" style="display:none;"></i>
+                    </button>
+                    <select id="select-zoom-ratio" class="pure-input-1" title="選擇顯示比例">
+                        <option value="fit" selected data-i18n="zoomFit">自動 (適應視窗)</option>
+                        <option value="0.5">50%</option>
+                        <option value="0.75">75%</option>
+                        <option value="1">100%</option>
+                        <option value="1.25">125%</option>
+                        <option value="1.5">150%</option>
+                        <option value="2">200%</option>
+                        <option value="2.5">250%</option>
+                        <option value="3">300%</option>
+                        <option value="4">400%</option>
+                        <option value="5">500%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sidebar-section sidebar-section--images">
+                <div class="sidebar-title">
+                    <i class="ti ti-photo"></i> <span data-i18n="headerImg">圖片與卡套</span>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-bg-desktop" class="pure-button">
+                        <i class="ti ti-photo"></i> <span data-i18n="selectBg">選擇背景</span>
+                    </button>
+                    <button id="btn-clear-bg" class="pure-button" disabled>
+                        <i class="ti ti-trash"></i> <span data-i18n="clearBg">清除背景</span>
+                    </button>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-crop-ratio-desktop" class="pure-button" type="button" title="裁切比例">
+                        <i class="ti ti-crop"></i> 裁切：無
+                    </button>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-object-desktop" class="pure-button" aria-controls="objekts-picker"
+                        aria-expanded="false">
+                        <i class="ti ti-cube"></i> <span data-i18n="objLabel">Object</span>
+                    </button>
+                    <button id="btn-reset-object" class="pure-button" disabled>
+                        <i class="ti ti-refresh"></i> <span data-i18n="resetPos">重置位置</span>
+                    </button>
+                </div>
+                <div class="object-selector-desktop" id="object-selector-desktop">
+                    <div class="obj-add-row">
+                        <button id="btn-remove-object-desktop" class="pure-button obj-add-btn" type="button" title="移除 Object">
+                            <i class="ti ti-minus"></i>
+                        </button>
+                        <button id="btn-add-object-desktop" class="pure-button obj-add-btn" type="button" title="新增 Object">
+                            <i class="ti ti-plus"></i>
+                        </button>
+                        <button id="btn-bring-front-desktop" class="pure-button obj-add-btn" type="button"
+                            title="移到最上層" aria-label="移到最上層">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-align-top">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M4 4l16 0" />
+                                <path d="M9 10a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2l0 -8" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="desktop-object-list" class="obj-scroll-list"></div>
+                </div>
+                <div class="sidebar-section sidebar-section--bookmarks">
+                    <div class="sidebar-title">
+                        <i class="ti ti-bookmarks"></i> <span data-i18n="bookmarksTitle">書籤</span>
+                    </div>
+                    <div class="bookmark-search-wrap">
+                        <i class="ti ti-search search-icon" aria-hidden="true"></i>
+                        <input type="text" id="bookmark-search" class="pure-input-1" placeholder="">
+                    </div>
+                    <div id="bookmark-list-desktop" class="bookmark-list-desktop"></div>
+                </div>
+                <div class="sidebar-row">
+                    <input type="text" id="input-url-desktop" class="pure-input-1"
+                        placeholder="https://apollo.cafe/?id=Ever01-?-000Z">
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-fetch-url-desktop" class="pure-button">
+                        <i class="ti ti-link"></i> <span data-i18n="importUrl">載入網址</span>
+                    </button>
+                </div>
+                <div class="sidebar-row">
+                    <label class="checkbox pure-checkbox" style="flex: 1;">
+                        <input type="checkbox" id="chk-sleeve" checked>
+                        <span data-i18n="useSleeve">套用卡套</span>
+                    </label>
+                    <label class="checkbox pure-checkbox" style="flex: 1;">
+                        <input type="checkbox" id="chk-usetext" checked>
+                        <span data-i18n="useText">套用文字</span>
+                    </label>
+                    <label class="checkbox pure-checkbox" style="flex: 1;">
+                        <input type="checkbox" id="chk-play-video" checked>
+                        <span data-i18n="playVideo">播放影片</span>
+                    </label>
+                </div>
+                <div class="sidebar-row">
+                    <div class="select-with-icon" style="flex:1;">
+                        <i class="ti ti-layout-grid"></i>
+                        <select id="select-grid" class="pure-input-1" title="網格輔助">
+                            <option value="none" selected data-i18n="gridNone">無網格</option>
+                            <option value="thirds" data-i18n="gridThirds">九宮格（三分法）</option>
+                            <option value="phi" data-i18n="gridPhi">黃金比例（φ）</option>
+                            <option value="center" data-i18n="gridCenter">中心十字</option>
+                        </select>
+                    </div>
+                    <label class="checkbox pure-checkbox align-checkbox" style="flex: 1;">
+                        <input type="checkbox" id="chk-align" checked>
+                        <span data-i18n="alignToggle">對齊</span>
+                    </label>
+                </div>
+            </div>
+
+
+            <div class="sidebar-section sidebar-section--layout">
+                <div class="sidebar-row">
+                    
+                </div>
+                <div class="sidebar-title">
+                    <i class="ti ti-layout-grid"></i> <span data-i18n="layoutToolsTitle">排版工具</span>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-layout-grid" class="pure-button" data-i18n="layoutGrid">網格</button>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-layout-circle" class="pure-button" data-i18n="layoutCircle">圓形</button>
+                    <button id="btn-layout-fan" class="pure-button" data-i18n="layoutFan">扇形</button>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-layout-stack" class="pure-button" data-i18n="layoutStack">Stack</button>
+                    <button id="btn-layout-flip3d" class="pure-button" data-i18n="layoutFlip3D">Flip3D</button>
+                </div>
+                <div class="sidebar-row" style="flex-direction: column; gap: 4px; align-items: stretch;">
+                    <span style="font-size: 10px; color: var(--text-muted);" data-i18n="layoutSpacing">間距/半徑 (Spacing/Radius)</span>
+                    <input type="range" id="slider-layout-spacing" min="50" max="500" value="200" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutScale">整體縮放 (Scale)</span>
+                    <input type="range" id="slider-global-scale" min="1" max="100" value="50" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotY">水平 3D 翻轉 (RotY)</span>
+                    <input type="range" id="slider-3d-roty" min="1" max="100" value="50" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotX">垂直 3D 俯仰 (RotX)</span>
+                    <input type="range" id="slider-3d-rotx" min="1" max="100" value="50" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutX">水平平移 (X)</span>
+                    <input type="range" id="slider-global-x" min="-5000" max="5000" value="0" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutY">垂直平移 (Y)</span>
+                    <input type="range" id="slider-global-y" min="-5000" max="5000" value="0" style="width: 100%;">
+                    <span style="font-size: 10px; color: var(--text-muted); margin-top: 4px;" data-i18n="layoutRotation">整體旋轉 (Rotation)</span>
+                    <input type="range" id="slider-global-rotation" min="0" max="360" value="0" style="width: 100%;">
+                </div>
+            </div>
+
+            <div class="sidebar-section sidebar-section--text">
+                <div class="sidebar-row">
+                    <input type="text" id="input-text" class="pure-input-2" value="000A" maxlength="4">
+                    <input type="text" id="input-text2" class="pure-input-2" value="000000" maxlength="6"
+                        placeholder="000000" inputmode="numeric">
+                    <select id="select-font" class="pure-input-fontchoese" style="color: #aaa;">
+                        <option value="Inter" selected>Inter</option>
+                        <option value="Montserrat">Montserrat</option>
+                        <option value="Pretendard">Pretendard</option>
+                    </select>
+                    <input type="color" id="input-color" value="#ffffff">
+                </div>
+            
+            <div class="sidebar-row">
+                <div class="qr-input-wrap">
+                    <i class="ti ti-qrcode qr-input-icon"></i>
+                    <input type="text" id="input-qr-text" placeholder=" 　  QR text (default: cosmo://the-gate)" maxlength="200" />
+                </div>
+            </div>
+</div>
+
+            <div class="sidebar-section sidebar-section--export">
+                <div class="sidebar-title sidebar-title--export">
+                    <i class="ti ti-download"></i> <span data-i18n="headerExport">匯出與設定</span>
+                </div>
+                <div class="sidebar-row">
+                    <div class="select-with-icon" style="flex:1;">
+                        <i class="ti ti-target"></i>
+                        <select id="select-target" class="pure-input-1">
+                            <option value="all" selected data-i18n="targetAll">匯出全部</option>
+                            <option value="object" data-i18n="targetObj">只有Object</option>
+                        </select>
+                    </div>
+                    <div class="select-with-icon" style="flex:1;">
+                        <i class="ti ti-file"></i>
+                        <select id="select-format" class="pure-input-1"></select>
+                    </div>
+                </div>
+                <div class="sidebar-row">
+                    <button id="export-btn" class="pure-button">
+                        <i class="ti ti-download"></i> <span data-i18n="export">匯出</span>
+                    </button>
+                </div>
+                <div class="sidebar-row">
+                    <div class="select-with-icon" style="flex:1;">
+                        <i class="ti ti-world"></i>
+                        <select id="select-lang" class="pure-input-1">
+                            <option value="zh-TW" selected>繁體中文</option>
+                            <option value="zh-CN">简体中文</option>
+                            <option value="en">English</option>
+                            <option value="ja">日本語</option>
+                            <option value="ko">한국어</option>
+                            <option value="th">ไทย</option>
+                            <option value="vi">Tiếng Việt</option>
+                        </select>
+                    </div>
+                    <button id="reset-all-btn" class="pure-button">
+                        <i class="ti ti-rotate-clockwise"></i> <span data-i18n="resetAll">全部重置</span>
+                    </button>
+                </div>
+                <div class="sidebar-row">
+                    <button id="btn-clear-cache-desktop" class="pure-button">
+                        <i class="ti ti-database-off"></i> <span data-i18n="clearCacheBtn">清除本地資料（書籤、快取）</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section sidebar-section--coords" id="coord-monitor-section">
+                <div class="sidebar-title">
+                    <i class="ti ti-focus-2"></i> <span data-i18n="headerCoords">Object 座標</span>
+                </div>
+                <div class="coord-input-row">
+                    <button id="btn-reset-3d" class="pure-button" style="flex:1;">
+                        <i class="ti ti-rotate-clockwise"></i> <span data-i18n="reset3d">重置 3D 角度</span>
+                    </button>
+                </div>
+                <div class="coord-box-row">
+                    <div class="coord-box">
+                        <div class="coord-label">X:</div>
+                        <div class="coord-value" id="coord-x">0</div>
+                    </div>
+                    <div class="coord-box">
+                        <div class="coord-label">Y:</div>
+                        <div class="coord-value" id="coord-y">0</div>
+                    </div>
+                </div>
+                <div class="coord-box-row coord-row-2">
+                    <div class="coord-box coord-box-r">
+                        <div class="coord-label">R:</div>
+                        <div class="coord-value" id="coord-r">0°</div>
+                    </div>
+                    <div class="coord-box">
+                        <div class="coord-label">Z:</div>
+                        <div class="coord-value" id="coord-z">0</div>
+                    </div>
+                </div>
+                <div class="coord-input-row">
+                    <input type="number" id="input-coord-x" class="pure-input-1" placeholder="X" step="1">
+                    <input type="number" id="input-coord-y" class="pure-input-1" placeholder="Y" step="1">
+                    <input type="number" id="input-coord-z" class="pure-input-1" placeholder="Z %" step="1">
+                    <input type="number" id="input-coord-r" class="pure-input-1" placeholder="R °" step="0.1">
+                </div>
+                <div class="coord-input-row">
+                    <input type="number" id="input-coord-rx" class="pure-input-1" placeholder="RX °" step="1" value="0">
+                    <input type="number" id="input-coord-ry" class="pure-input-1" placeholder="RY °" step="1" value="0">
+                </div>
+            </div>
+        </div>
+
+        <button id="btn-sidebar-toggle" title="收折選單">
+            <i class="ti ti-chevron-left"></i>
+        </button>
+
+        <div id="workspace">
+            <div id="hint" data-i18n="dropHint">放開以載入背景圖</div>
+            <div id="canvas-wrap">
+                <canvas id="bg-canvas" width="1083" height="1673"></canvas>
+                <canvas id="ui-canvas" width="1083" height="1673"></canvas>
+			<div id="canvas-empty-hint" class="canvas-empty-hint" aria-hidden="true">
+				<i class="ti ti-file-upload"></i>
+			</div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="input-bg"
+        accept="image/*,video/mp4,video/quicktime,video/x-matroska,video/mp2t,video/webm,video/x-m4v,.mkv,.ts,.mov,.m4v"
+        style="display: none !important;">
+    <div id="toast"></div>
+    <div id="export-log" class="export-log" aria-live="polite">
+        <img id="export-log-spinner" alt="" width="16" height="16"
+            style="display:none;vertical-align:middle;margin-right:6px;">
+        <span id="export-log-text"></span>
+    </div>
+    <script type="module" src="main.js"></script>
+</body>
+
+</html>
